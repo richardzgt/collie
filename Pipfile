@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+bpython = "==0.19"
+celery = "==4.4.2"
+coreapi = "==2.3.3"
+django = "==2.2.2"
+djangorestframework = "==3.11.0"
+django-cors-headers = "==3.2.1"
+django-rest-auth = "==0.9.5"
+gunicorn = "==20.0.4"
+pyzabbix = "==0.7.5"
+pymysql = "==0.9.3"
+redis = "==3.5.2"
+
+[requires]
+python_version = "3.6"

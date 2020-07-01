@@ -1,0 +1,97 @@
+GET /api/configure/host 获取资源列表
+POST /api/configure/host 创建资源
+GET /api/configure/host/{id} 获取资源detail信息
+PUT /api/configure/host/{id} 更新资源
+Url: /api/configure/host
+DELETE  /api/configure/host/{id} 参数资源
+
+################### Host 主机 ################### 
+方法： GET
+入参:
+{
+    filter_key: 'host|avaiable|status',
+    filter_value: 'yum.ops.net|1|0',
+    noPage: 1, # 不分页，只返回 hostid + host
+}
+
+出参:
+{
+    pageObjects:[
+        {
+        hostid: 
+        proxy_hostid:
+        error:
+        host:
+        available
+        status
+        snmp_available
+        snmp_error
+        paraentTemplates
+        interface
+        }
+    ]
+    totalPages: 1
+    pageNo: 1
+    pageSize
+
+}
+201 
+ 
+
+Url: /api/configure/host/{id}
+方法： GET
+入参 
+{    
+}
+
+
+Url: /api/configure/host
+方法： POST
+入参:
+{
+    host: 'test01' # 必传
+    interface: [{"type":"1", "main":"1", "useip":"1", "ip":"10.0.99.1", "dns":"" ,"port":"10050"}] # 必传
+    templates: ["10267", "10001"] # 必传
+
+}
+
+
+Url: /api/configure/host
+方法： PUT
+入参:
+{
+    interfaces: [{"type":"1", "main":"1", "useip":"1", "ip":"10.0.33.1", "dns":"" ,"port":"10050"}]
+    host: 'test3'
+    status: 0 # 0 启用， 1 停用
+    templates: ["10267", "10001"] 
+}
+
+################### template 模板 ################### 
+Url: /api/configure/template
+方法： GET
+入参:  
+{
+    
+}
+
+################### Item 监控项 ################### 
+Url: /api/configure/item
+方法： GET
+入参:  
+{
+    filter_key: 'hostid|host|application|status',
+    filter_value: '10232|yum.ops.net|1|0'
+}
+
+
+
+################### Trigger 触发器 ################### 
+Url: /api/configure/trigger
+方法： GET
+入参:  
+{
+    filter_key: 'host|application|status',
+    filter_value: 'yum.ops.net|1|0'
+}
+
+

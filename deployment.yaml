@@ -1,0 +1,236 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: collie-mysql
+  namespace: collie
+spec:
+  selector:
+    app: collie
+    role: mysql
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-data
+  namespace: collie
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: collie
+    role: mysql
+  name: collie-mysql
+  namespace: collie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collie
+      role: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: collie
+        role: mysql
+    spec:
+      containers:
+      - args:
+        - mysqld
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        - --init-connect=SET NAMES utf8mb4
+        - --innodb-flush-log-at-trx-commit=0
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "false"
+        - name: MYSQL_DATABASE
+          value: collie
+        - name: MYSQL_PASSWORD
+          value: huored
+        - name: MYSQL_USER
+          value: root
+        image: harbor.ops.net/library/mysql:5.7.22
+        imagePullPolicy: IfNotPresent
+        name: collie-mysql
+        ports:
+        - containerPort: 3306
+          hostPort: 13306
+          name: 3306tcp133060
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data
+        - mountPath: /etc/localtime
+          name: tz-config
+      restartPolicy: Always
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-data
+      - hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai
+          type: ""
+        name: tz-config
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: collie-redis
+  namespace: collie
+spec:
+  selector:
+    app: collie
+    role: redis
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: collie
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: collie
+    role: redis
+  name: collie-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collie
+      role: redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: collie
+        role: redis
+    spec:
+      containers:
+      - image: harbor.ops.net/library/redis:3.2.6-alpine
+        imagePullPolicy: IfNotPresent
+        name: collie-redis
+        volumeMounts:
+        - mountPath: /var/lib/redis
+          name: redis-data
+        - mountPath: /etc/localtime
+          name: tz-config
+      restartPolicy: Always
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-data
+      - hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai
+          type: ""
+        name: tz-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django
+  labels:
+    name: django
+  namespace: collie
+data:
+  entrypoint.sh: |-
+    #!/bin/sh
+    cd /collie
+    python manage.py collectstatic
+    gunicorn collie.wsgi -b 0.0.0.0:80 &
+    celery -A collie worker -l info &
+    celery -A collie beat -l info
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: collie-backend-service
+  namespace: collie
+spec:
+  selector:
+    app: collie
+    role: backend
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collie-backend
+  namespace: collie
+  labels:
+    app: collie
+    role: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collie
+  template:
+    metadata:
+      labels:
+        app: collie
+        role: backend
+    spec:
+      containers:
+      - args:
+        - sh
+        - /django/entrypoint.sh
+        name: collie-backend
+        image: harbor.ops.net/ga/collie_backend:${CICD_GIT_COMMIT}
+        env:
+        - name: DB_HOST
+          value: collie-mysql
+        - name: REDIS_HOST
+          value: collie-redis
+        - name: ZABBIX_URL
+          value: http://zabbix5.biz.cloud.net
+        - name: ZABBIX_USER
+          value: Admin
+        - name: ZABBIX_PASSWORD
+          value: huored
+        - name: ZABBIX_WEB_MONITOR_HOSTID
+          value: "10084"
+        ports:
+        - containerPort: 80
+        tty: true
+        volumeMounts:
+        - name: django
+          mountPath: /django
+          readOnly: false
+      volumes:
+      - name: django
+        configMap:
+          name: django
+          defaultMode: 0755

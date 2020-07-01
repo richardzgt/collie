@@ -1,0 +1,16 @@
+1. 软件源或源码安装Redis, 3/4/5版本都可以
+
+2. 安装python库
+pip install celery redis
+
+3. 启动Redis服务
+systemctl start redis-server
+
+4. 激活django project的虚拟环境然后启动Celery
+- 开发环境:
+celery -A collie worker --beat -l debug
+
+- 生产环境建议单独启动worker和beat：
+celery -A collie worker -l info
+celery -A collie beat -l info
+worker默认启动CPU物理核数个的子进程

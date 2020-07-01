@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-03 11:35+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: admin.py:11
+msgid "Quota"
+msgstr "套餐配额"
+
+#: admin.py:12
+msgid "Personal info"
+msgstr ""
+
+#: admin.py:13
+msgid "Permissions"
+msgstr ""
+
+#: admin.py:16
+msgid "Important dates"
+msgstr ""
+
+#: models.py:59
+msgid "username"
+msgstr ""
+
+#: models.py:64
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+
+#: models.py:67
+msgid "A user with that username already exists."
+msgstr ""
+
+#: models.py:72
+msgid "company"
+msgstr "公司"
+
+#: models.py:74
+msgid "Required. 150 characters or fewer."
+msgstr ""
+
+#: models.py:76
+msgid "email address"
+msgstr ""
+
+#: models.py:79
+msgid "staff status"
+msgstr ""
+
+#: models.py:81
+msgid "Designates whether the user can log into this admin site."
+msgstr ""
+
+#: models.py:84
+msgid "active"
+msgstr ""
+
+#: models.py:87
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr ""
+
+#: models.py:91
+msgid "date joined"
+msgstr ""
+
+#: models.py:92
+msgid "instance quota"
+msgstr "实例配额"
+
+#: models.py:95
+msgid "expire date"
+msgstr ""
+
+#: models.py:114
+msgid "user"
+msgstr ""
+
+#: models.py:115
+msgid "users"
+msgstr ""
+
+#: serializers.py:63
+msgid "User account is disabled."
+msgstr ""
+
+#: serializers.py:73
+msgid "Unable to log in with provided credentials."
+msgstr ""
+
+#: serializers.py:76
+#, python-brace-format
+msgid "Must include \"{email_field}\" and \"password\"."
+msgstr ""

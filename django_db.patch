@@ -1,0 +1,29 @@
+diff --git a/.venv/lib/python3.6/site-packages/django/db/backends/mysql/operations.py b/.venv/lib/python3.6/site-packages/django/db/backends/mysql/operations.py
+index 43f4f74..250a004 100644
+--- a/.venv/lib/python3.6/site-packages/django/db/backends/mysql/operations.py
++++ b/.venv/lib/python3.6/site-packages/django/db/backends/mysql/operations.py
+@@ -143,7 +143,7 @@ class DatabaseOperations(BaseDatabaseOperations):
+         # See MySQLdb/cursors.py in the source distribution.
+         query = getattr(cursor, '_executed', None)
+         if query is not None:
+-            query = query.decode(errors='replace')
++            query = query.encode(errors='replace')
+         return query
+ 
+     def no_limit_value(self):
+diff --git a/.venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py b/.venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py
+index 2cd6248..700091e 100644
+--- a/.venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py
++++ b/.venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py
+@@ -32,8 +32,8 @@ from .schema import DatabaseSchemaEditor                    # isort:skip
+ from .validation import DatabaseValidation                  # isort:skip
+ 
+ version = Database.version_info
+-if version < (1, 3, 13):
+-    raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
++# if version < (1, 3, 13):
++#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+ 
+ 
+ # MySQLdb returns TIME columns as timedelta -- they are more like timedelta in
+rm '.venv/lib/python3.6/site-packages/django/db/backends/mysql/base.py'

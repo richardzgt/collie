@@ -1,0 +1,64 @@
+stages:
+- name: Publish
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: ga/collie_backend:${CICD_GIT_COMMIT}
+      pushRemote: true
+      registry: harbor.ops.net
+    env:
+      PLUGIN_DEBUG: "true"
+      PLUGIN_INSECURE: "true"
+    when:
+      branch:
+        include:
+        - master
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile_dev
+      buildContext: .
+      tag: ga/collie_backend:${CICD_GIT_COMMIT}
+      pushRemote: true
+      registry: harbor.ops.net
+    env:
+      PLUGIN_DEBUG: "true"
+      PLUGIN_INSECURE: "true"
+    when:
+      branch:
+        include:
+        - dev
+  when:
+    branch:
+      include:
+      - dev
+      - master
+- name: Deploy
+  steps:
+  - applyYamlConfig:
+      path: ./deployment.yaml
+    env:
+      DB_HOST: collie-mysql
+      FRONTEND_HOST: collie.ol.amazlet.com
+      REDIS_HOST: collie-redis
+    when:
+      branch:
+        include:
+        - master
+  - applyYamlConfig:
+      path: ./deployment_dev.yaml
+    env:
+      DB_HOST: collie-mysql
+      FRONTEND_HOST: collie.c1.dev.amazlet.net
+      REDIS_HOST: collie-redis
+    when:
+      branch:
+        include:
+        - dev
+        exclude:
+        - master
+timeout: 60
+branch:
+  include:
+  - dev
+  - master
+notification: {}
